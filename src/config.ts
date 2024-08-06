@@ -28,8 +28,8 @@ export type VideoConfigComplete = {
   /* An optional function to generate the local asset path for remote sources. */
   remoteSourceAssetPath?: (url: string) => string;
 
-  loadAsset: (path: string) => Promise<Asset>;
-  saveAsset: (path: string, asset: Asset) => Promise<void>;
+  loadAsset: (path?: string | null) => Promise<Asset>;
+  saveAsset: (path?: string | null, asset?: Asset | null) => Promise<void>;
 };
 
 export type ProviderConfig = {
@@ -116,10 +116,7 @@ async function importConfig(file: string) {
   const fileUrl = pathToFileURL(absFilePath).href;
 
   const mod = await import(/* webpackIgnore: true */ fileUrl);
-  const config:
-    | ((phase: string | undefined, opts: any) => Promise<NextConfig>)
-    | NextConfig
-    | undefined = mod?.default;
+  const config: ((phase: string | undefined, opts: any) => Promise<NextConfig>) | NextConfig | undefined = mod?.default;
 
   if (typeof config === 'function') {
     return config(process.env.NEXT_PHASE, { defaultConfig: {} });
