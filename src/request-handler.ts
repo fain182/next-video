@@ -41,7 +41,6 @@ async function handleRequest(url?: string | null) {
   } catch {
     // todo: does this require auth?
     const videoConfig = await getVideoConfig();
-    throw new Error(`request handler videoConfig: ${videoConfig}`);
     asset = await createAsset(url);
 
     if (asset) {
