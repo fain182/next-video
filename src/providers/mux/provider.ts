@@ -16,7 +16,7 @@ export type MuxMetadata = {
   uploadId?: string;
   assetId?: string;
   playbackId?: string;
-}
+};
 
 // We don't want to blow things up immediately if Mux isn't configured,
 // but we also don't want to need to initialize it every time in situations like polling.
@@ -48,7 +48,7 @@ async function pollForAssetReady(filePath: string, asset: Asset) {
       providerMetadata: {
         mux: {
           playbackId,
-        }
+        },
       },
     });
   }
@@ -80,7 +80,7 @@ async function pollForAssetReady(filePath: string, asset: Asset) {
       providerMetadata: {
         mux: {
           playbackId,
-        }
+        },
       },
     });
 
@@ -115,7 +115,7 @@ async function pollForUploadAsset(filePath: string, asset: Asset) {
       providerMetadata: {
         mux: {
           assetId: muxUpload.asset_id,
-        }
+        },
       },
     });
 
@@ -175,7 +175,7 @@ export async function uploadLocalFile(asset: Asset) {
     providerMetadata: {
       mux: {
         uploadId: upload.id as string, // more typecasting while we use the beta mux sdk
-      }
+      },
     },
   });
 
@@ -228,12 +228,15 @@ export async function uploadRequestedFile(asset: Asset) {
 
   const assetObj = await mux.video.assets.create({
     // @ts-ignore
-    input: [{
-      url: filePath
-    }],
-    playback_policy: ['public']
+    input: [
+      {
+        url: filePath,
+      },
+    ],
+    playback_policy: ['public'],
   });
 
+  log.info(log.label('EHY'), filePath);
   log.info(log.label('Asset is processing:'), filePath);
   log.space(chalk.gray('>'), log.label('Mux Asset ID:'), assetObj.id);
 
@@ -242,7 +245,7 @@ export async function uploadRequestedFile(asset: Asset) {
     providerMetadata: {
       mux: {
         assetId: assetObj.id!,
-      }
+      },
     },
   });
 
