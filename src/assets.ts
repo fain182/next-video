@@ -6,13 +6,7 @@ import { deepMerge, camelCase, isRemote, toSafePath } from './utils/utils.js';
 import * as transformers from './providers/transformers.js';
 
 export interface Asset {
-  status:
-    | 'sourced'
-    | 'pending'
-    | 'uploading'
-    | 'processing'
-    | 'ready'
-    | 'error';
+  status: 'sourced' | 'pending' | 'uploading' | 'processing' | 'ready' | 'error';
   originalFilePath: string;
   // TODO: should we add a `filePath` field which would store the file path
   // without the configurable folder? This would allow us to change the folder
@@ -59,8 +53,7 @@ export async function getAssetConfigPath(filePath: string) {
 async function getAssetPath(filePath: string) {
   if (!isRemote(filePath)) return filePath;
 
-  const { folder, remoteSourceAssetPath = defaultRemoteSourceAssetPath } =
-    await getVideoConfig();
+  const { folder, remoteSourceAssetPath = defaultRemoteSourceAssetPath } = await getVideoConfig();
 
   if (!folder) throw new Error('Missing video `folder` config.');
 
@@ -76,10 +69,7 @@ function defaultRemoteSourceAssetPath(url: string) {
   return toSafePath(decodeURIComponent(`${urlObj.hostname}${urlObj.pathname}`));
 }
 
-export async function createAsset(
-  filePath: string,
-  assetDetails?: Partial<Asset>
-) {
+export async function createAsset(filePath: string, assetDetails?: Partial<Asset>) {
   const videoConfig = await getVideoConfig();
   const assetConfigPath = await getAssetConfigPath(filePath);
 
@@ -111,17 +101,10 @@ export async function createAsset(
   return newAssetDetails;
 }
 
-export async function updateAsset(
-  filePath: string,
-  assetDetails: Partial<Asset>
-) {
+export async function updateAsset(filePath: string, assetDetails: Partial<Asset>) {
   const assetConfigPath = await getAssetConfigPath(filePath);
   const currentAsset = await getAsset(filePath);
   const { saveAsset } = await getVideoConfig();
-
-  if (!currentAsset) {
-    throw new Error(`Asset not found: ${filePath}`);
-  }
 
   let newAssetDetails = deepMerge(currentAsset, assetDetails, {
     updatedAt: Date.now(),
