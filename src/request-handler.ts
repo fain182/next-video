@@ -38,9 +38,11 @@ async function handleRequest(url?: string | null) {
   let asset;
   try {
     asset = await getAsset(url);
+    if (!asset) {
+      throw new Error('Asset not found');
+    }
   } catch {
     // todo: does this require auth?
-    const videoConfig = await getVideoConfig();
     asset = await createAsset(url);
 
     if (asset) {
