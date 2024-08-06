@@ -6,7 +6,7 @@ import { isRemote } from './utils/utils.js';
 
 // App Router
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url)
+  const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
   const { status, data } = await handleRequest(url);
   // @ts-ignore - Response.json() is only valid from TypeScript 5.2
@@ -23,7 +23,7 @@ async function handleRequest(url?: string | null) {
   if (!url) {
     return {
       status: 400,
-      data: { error: 'url parameter is required' }
+      data: { error: 'url parameter is required' },
     };
   }
 
@@ -31,7 +31,7 @@ async function handleRequest(url?: string | null) {
     // todo: handle local files via string src
     return {
       status: 400,
-      data: { error: 'local files should be imported as a module' }
+      data: { error: 'local files should be imported as a module' },
     };
   }
 
@@ -40,6 +40,8 @@ async function handleRequest(url?: string | null) {
     asset = await getAsset(url);
   } catch {
     // todo: does this require auth?
+    const videoConfig = await getVideoConfig();
+    throw new Error(`request handler videoConfig: ${videoConfig}`);
     asset = await createAsset(url);
 
     if (asset) {
