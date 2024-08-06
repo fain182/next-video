@@ -28,8 +28,8 @@ export type VideoConfigComplete = {
   /* An optional function to generate the local asset path for remote sources. */
   remoteSourceAssetPath?: (url: string) => string;
 
-  loadAsset: (path?: string | null) => Promise<Asset>;
-  saveAsset: (path?: string | null, asset?: Asset | null) => Promise<void>;
+  loadAsset: (path: any) => Promise<Asset>;
+  saveAsset: (path: any, asset: any) => Promise<void>;
 };
 
 export type ProviderConfig = {
