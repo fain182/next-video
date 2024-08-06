@@ -237,6 +237,7 @@ export async function uploadRequestedFile(asset: Asset) {
   });
 
   log.info(log.label('EHY'), filePath);
+  log.info(log.label('EHY2'), filePath);
   log.info(log.label('Asset is processing:'), filePath);
   log.space(chalk.gray('>'), log.label('Mux Asset ID:'), assetObj.id);
 
