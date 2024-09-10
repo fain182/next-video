@@ -46,10 +46,9 @@ export interface AssetSource {
 }
 
 export async function getAsset(filePath: string): Promise<Asset | undefined> {
+  const videoConfig = await getVideoConfig();
   const assetConfigPath = await getAssetConfigPath(filePath);
-  const file = await readFile(assetConfigPath);
-  const asset = JSON.parse(file.toString());
-  return asset;
+  return videoConfig.loadAsset(assetConfigPath)
 }
 
 export async function getAssetConfigPath(filePath: string) {

@@ -3,6 +3,9 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 import nextConfig from 'next/config.js';
 import type { NextConfig } from 'next';
+import { Asset } from './assets';
+import { readFile } from 'node:fs/promises';
+
 // @ts-ignore
 const getConfig = nextConfig.default;
 
@@ -21,6 +24,9 @@ export type VideoConfigComplete = {
 
   /* Config by provider. */
   providerConfig: ProviderConfig;
+
+  /* An function to retrieve asset data, by default read from the filesystem */
+  loadAsset: (path: string) => Promise<Asset | undefined>;
 
   /* An optional function to generate the local asset path for remote sources. */
   remoteSourceAssetPath?: (url: string) => string;
@@ -62,6 +68,12 @@ export const videoConfigDefault: VideoConfigComplete = {
   path: '/api/video',
   provider: 'mux',
   providerConfig: {},
+  loadAsset: async function (path: string): Promise<Asset | undefined> {
+    const file = await readFile(path);
+    const asset = JSON.parse(file.toString());
+    return asset;
+  }
+
 };
 
 /**
@@ -70,7 +82,6 @@ export const videoConfigDefault: VideoConfigComplete = {
  */
 export async function getVideoConfig(): Promise<VideoConfigComplete> {
   let nextConfig: NextConfig | undefined = getConfig();
-
   if (!nextConfig?.serverRuntimeConfig?.nextVideo) {
     try {
       nextConfig = await importConfig('next.config.js');

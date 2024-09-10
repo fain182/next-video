@@ -2,6 +2,7 @@ import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
 import { withNextVideo } from '../src/with-next-video.js';
+import { Asset } from '../src/assets.js';
 
 describe('withNextVideo', () => {
   it('should handle nextConfig being a function', async () => {
@@ -50,18 +51,22 @@ describe('withNextVideo', () => {
 
   it('should handle videoConfig being passed', async () => {
     const nextConfig = {};
+    const fakeLoadAsset = function (path: string): Promise<Asset | undefined> { return Promise.resolve(undefined) }
 
     const result = await withNextVideo(nextConfig, {
       path: '/api/video-files',
       folder: 'video-files',
       provider: 'vercel-blob',
+      loadAsset: fakeLoadAsset
     });
 
-    assert.deepEqual(result.serverRuntimeConfig.nextVideo, {
+    const config = result.serverRuntimeConfig.nextVideo;
+    assert.deepEqual(config, {
       path: '/api/video-files',
       folder: 'video-files',
       provider: 'vercel-blob',
       providerConfig: {},
+      loadAsset: fakeLoadAsset
     });
   });
 
