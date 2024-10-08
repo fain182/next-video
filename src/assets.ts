@@ -45,10 +45,22 @@ export interface AssetSource {
   type?: string;
 }
 
+async function loadAsset(apiBaseUrl: string, assetPath:string) {
+  const assetFetchResult = await fetch(
+    `${apiBaseUrl}/${assetPath}`
+  )
+
+  if (!assetFetchResult.ok) {
+    throw new Error('Asset not found')
+  } else {
+    return await assetFetchResult.json()
+  }
+}
+
 export async function getAsset(filePath: string): Promise<Asset | undefined> {
   const videoConfig = await getVideoConfig();
   const assetConfigPath = await getAssetConfigPath(filePath);
-  return videoConfig.loadAsset(assetConfigPath)
+  return loadAsset(videoConfig.apiBaseUrl, assetConfigPath)
 }
 
 export async function getAssetConfigPath(filePath: string) {
@@ -73,6 +85,26 @@ function defaultRemoteSourceAssetPath(url: string) {
   // Strip the search params from the file path so in most cases it'll
   // have a video file extension and not a query string in the end.
   return toSafePath(decodeURIComponent(`${urlObj.hostname}${urlObj.pathname}`));
+}
+
+async function saveAsset(apiBaseUrl: string, assetPath: string, asset: Asset) {
+  const bodyRequest = { path: assetPath, asset: JSON.stringify(asset) }
+    const assetFetchResult = await fetch(
+      apiBaseUrl,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bodyRequest),
+      }
+    )
+
+    if (!assetFetchResult.ok) {
+      throw new Error(
+        `Impossibile salvare video asset, status code: ${assetFetchResult.status}`
+      )
+    }
 }
 
 export async function createAsset(
@@ -105,7 +137,7 @@ export async function createAsset(
     }
   }
 
-  await videoConfig.saveAsset(assetConfigPath, newAssetDetails)
+  await saveAsset(videoConfig.apiBaseUrl, assetConfigPath, newAssetDetails)
 
   return newAssetDetails;
 }
@@ -128,7 +160,7 @@ export async function updateAsset(
 
   newAssetDetails = transformAsset(transformers, newAssetDetails);
 
-  await videoConfig.updateAsset(assetConfigPath, newAssetDetails)
+  await saveAsset(videoConfig.apiBaseUrl, assetConfigPath, newAssetDetails)
 
   return newAssetDetails;
 }

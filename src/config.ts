@@ -25,14 +25,7 @@ export type VideoConfigComplete = {
   /* Config by provider. */
   providerConfig: ProviderConfig;
 
-  /* An function to retrieve asset data, by default use the filesystem */
-  loadAsset: (assetPath: string) => Promise<Asset | undefined>;
-
-  /* An function to save asset data, by default use the filesystem */
-  saveAsset: (assetPath: string, asset: Asset) => Promise<void>;
-
-  /* An function to update asset data, by default use the filesystem */
-  updateAsset: (assetPath: string, asset: Asset) => Promise<void>;
+  apiBaseUrl: string;
 
   /* An optional function to generate the local asset path for remote sources. */
   remoteSourceAssetPath?: (url: string) => string;
@@ -74,28 +67,7 @@ export const videoConfigDefault: VideoConfigComplete = {
   path: '/api/video',
   provider: 'mux',
   providerConfig: {},
-  loadAsset: async function (assetPath: string): Promise<Asset | undefined> {
-    const file = await readFile(assetPath);
-    const asset = JSON.parse(file.toString());
-    return asset;
-  },
-  saveAsset: async function (assetPath: string, asset: Asset): Promise<void> {
-    try {
-      await mkdir(path.dirname(assetPath), { recursive: true });
-      await writeFile(assetPath, JSON.stringify(asset), {
-        flag: 'wx',
-      });
-    } catch (err: any) {
-      if (err.code === 'EEXIST') {
-        // The file already exists, and that's ok in this case. Ignore the error.
-        return;
-      }
-      throw err;
-    }
-  },
-  updateAsset: async function (assetPath: string, asset: Asset): Promise<void> {
-    await writeFile(assetPath, JSON.stringify(asset));
-  }
+  apiBaseUrl: ''
 };
 
 /**
