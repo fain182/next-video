@@ -45,12 +45,12 @@ export interface AssetSource {
   type?: string;
 }
 
-let assetCache = {};
+let assetCache : {[key: string]: Asset} = {};
 
 async function loadAsset(apiBaseUrl: string, assetPath:string) {
   if (assetPath in assetCache)
     return assetCache[assetPath]
-  
+
   const assetFetchResult = await fetch(
     `${apiBaseUrl}/${assetPath}`
   )
