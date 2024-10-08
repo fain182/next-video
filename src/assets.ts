@@ -48,8 +48,13 @@ export interface AssetSource {
 let assetCache : {[key: string]: Asset} = {};
 
 async function loadAsset(apiBaseUrl: string, assetPath:string) {
-  if (assetPath in assetCache)
+  console.log("LOAD "+ assetPath)
+  console.log("CACHE status" + JSON.stringify(assetCache))
+  if (assetPath in assetCache) {
+    console.log("HIT " + assetPath)
     return assetCache[assetPath]
+  }
+  console.log("MISS " + assetPath)
 
   const assetFetchResult = await fetch(
     `${apiBaseUrl}/${assetPath}`
@@ -60,6 +65,7 @@ async function loadAsset(apiBaseUrl: string, assetPath:string) {
   } else {
     const asset = await assetFetchResult.json()
     if (asset.status == "ready") {
+      console.log("ADDED " + assetPath)
       assetCache[assetPath] = asset;
     }
     return asset
